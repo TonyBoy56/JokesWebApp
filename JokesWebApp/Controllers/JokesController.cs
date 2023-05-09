@@ -22,9 +22,9 @@ namespace JokesWebApp.Controllers
         // GET: Jokes
         public async Task<IActionResult> Index()
         {
-              return _context.Joke != null ? 
-                          View(await _context.Joke.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Joke'  is null.");
+            return _context.Joke != null ?
+                        View(await _context.Joke.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Joke'  is null.");
         }
 
         // GET: Jokes/ShowSearchForm
@@ -36,9 +36,12 @@ namespace JokesWebApp.Controllers
         }
 
         // POST: Jokes/ShowSearchResults
-        public string ShowSearchResults(String SearchPhrase)
+        public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
         {
-            return "You entered " + "'" + SearchPhrase + "'";
+            //return List of filtered results
+            return _context.Joke != null ?
+                        View("Index", await _context.Joke.Where( j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Joke'  is null.");
         }
 
         // GET: Jokes/Details/5
@@ -164,14 +167,14 @@ namespace JokesWebApp.Controllers
             {
                 _context.Joke.Remove(joke);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool JokeExists(int id)
         {
-          return (_context.Joke?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Joke?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
